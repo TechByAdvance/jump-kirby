@@ -73,52 +73,101 @@ function showGameOver() {
 
 // ゲームを初期化する (02)
 function initGame() {
-
+    player = {
+        x: 150,
+        y: height / 2,
+        radius: 30,
+        angle: 0,
+        speedY: 0,
+        jumpCount: 0,
+    };
+    balls = [];
+    lastBallTime = millis();
+    startTime = millis();
+    scoreTime = 0;
 }
 
 // カービィを表示する (03)
 function drawPlayer() {
-    
+    kirby(player.x, player.y, player.radius, player.angle);
 }
 
 // カービィが転がるようにする (03)
 function updatePlayer() {
+    player.angle = player.angle + 10;
 
+    player.speedY = player.speedY + gravity;
+    player.y = player.y + player.speedY;
+
+    if (player.y >= baseline - player.radius) {
+        player.y = baseline - player.radius;
+        player.speedY = 0;
+        player.jumpCount = 2;
+    }
 }
 
 // カービィのジャンプ (03)
 function playerJump() {
-
+    if (player.jumpCount > 0) {
+        player.speedY = -18;
+        player.jumpCount = player.jumpCount - 1;
+    }
 }
 
 // モンスターボールを表示する (04)
 function drawBalls() {
-
+    for (let i = 0; i < balls.length; i++) {
+        monsterBall(balls[i].x, balls[i].y, balls[i].radius, balls[i].angle);
+    }
 }
 
 // モンスターボールを増やす (04)
 function addBalls() {
-
+    if (millis() - lastBallTime > 1500) {
+        lastBallTime = millis();
+        balls.push({
+            x: width + 50,
+            y: baseline - 150,
+            radius: 20,
+            speedX: 10,
+            speedY: 0,
+            angle: 0,
+        });
+    }
 }
 
 // モンスターボールに動きをつける (04)
 function updateBalls() {
+    for (let i = 0; i < balls.length; i++) {
+        balls[i].x = balls[i].x - balls[i].speedX;
+        balls[i].angle = balls[i].angle - 10;
 
+        balls[i].speedY = balls[i].speedY + gravity;
+        balls[i].y = balls[i].y + balls[i].speedY;
+
+        if (balls[i].y >= baseline - balls[i].radius) {
+            balls[i].y = baseline - balls[i].radius;
+            balls[i].speedY = -balls[i].speedY;
+        }
+    }
 }
 
 // カービィとモンスターボールの当たり判定 (05)
 function checkHits() {
-
+    
 }
 
 // スコアの値を更新する (06)
 function updateScore() {
-
+    scoreTime = floor((millis() - startTime) / 10);
 }
 
 // スコアを表示する (06)
 function drawScore() {
-    
+    fill("black");
+    textAlign(LEFT);
+    textSize(14);
+    text("SCORE: " + scoreTime, width - 120, 25);
 }
 
 function kirby(x, y, radius, angle) {
